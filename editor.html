@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text Editor</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #e0e0e0; /* Cor de fundo fora da área de edição */
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            height: 100vh;
+        }
+
+        /* Estilo do container do editor */
+        .editor-container {
+            width: 80%;
+            max-width: 1000px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            margin-top: 80px; /* Para dar espaço à barra de ferramentas */
+        }
+
+        /* Estilo para fixar a barra de ferramentas no topo */
+        .toolbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: #444;
+            padding: 10px;
+            box-sizing: border-box;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        /* Botões da barra de ferramentas */
+        .toolbar button,
+        .toolbar select,
+        .toolbar input {
+            padding: 8px;
+            background-color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+
+        /* Estilo de hover nos botões da barra de ferramentas */
+        .toolbar button:hover,
+        .toolbar select:hover,
+        .toolbar input:hover {
+            background-color: #ddd;
+        }
+
+        /* Área de edição */
+        .editor {
+            padding: 20px;
+            min-height: 400px;
+            font-size: 18px;
+            border-top: 1px solid #ddd;
+            outline: none;
+            overflow-wrap: break-word;
+            white-space: pre-wrap;
+            line-height: 1.5;
+            background-color: white;
+            box-sizing: border-box;
+        }
+
+        /* Estilo do header para o nome do documento */
+        header {
+            padding: 10px;
+            background-color: #333;
+            color: white;
+            border-top-right-radius: 8px;
+            border-top-left-radius: 8px;
+        }
+
+        #document-name {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: none;
+            background-color: #333;
+            color: white;
+        }
+
+        /* Margem cinza ao redor da área de escrita */
+        .editor-container::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            border-left: 1px solid #ccc;
+            background-color: #3a3535; /* Cor de fundo fora da área de edição */
+            z-index: -1;
+        }
+
+        /* Adaptabilidade para telas menores */
+        @media screen and (max-width: 768px) {
+            .toolbar {
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .editor-container {
+                width: 95%;
+                margin-left: 0;
+            }
+
+            header {
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="toolbar">
+        <button onclick="formatText('bold')">Bold</button>
+        <button onclick="formatText('italic')">Italic</button>
+        <button onclick="formatText('underline')">Underline</button>
+        <button onclick="formatText('justifyLeft')">Left</button>
+        <button onclick="formatText('justifyCenter')">Center</button>
+        <button onclick="formatText('justifyRight')">Right</button>
+        <button onclick="formatText('justifyFull')">Justify</button>
+        <select onchange="formatText('fontName', this.value)">
+            <option value="Arial">Arial</option>
+            <option value="Times New Roman">Times New Roman</option>
+            <option value="Courier New">Courier New</option>
+        </select>
+        <select onchange="formatText('fontSize', this.value)">
+            <option value="1">Size 1</option>
+            <option value="2">Size 2</option>
+            <option value="3">Size 3</option>
+            <option value="4">Size 4</option>
+            <option value="5">Size 5</option>
+            <option value="6">Size 6</option>
+            <option value="7">Size 7</option>
+        </select>
+        <button onclick="saveAsFile('txt')">Save as .txt</button>
+        <button onclick="saveAsFile('html')">Save as .html</button>
+    </div>
+
+    <div class="editor-container">
+        <header>
+            <input type="text" id="document-name" placeholder="Untitled Document">
+        </header>
+        <div id="editor" class="editor" contenteditable="true">
+            Start editing here...
+        </div>
+    </div>
+
+    <script>
+        // Função para formatar o texto no editor
+        function formatText(command, value = null) {
+            document.execCommand(command, false, value);
+        }
+
+        // Função para salvar o conteúdo como .txt ou .html
+        function saveAsFile(fileType) {
+            const editorContent = document.getElementById("editor").innerHTML;  // Obtém o conteúdo do editor
+            const documentName = document.getElementById("document-name").value || "Untitled";  // Nome do documento
+            let blob;
+
+            if (fileType === 'txt') {
+                // Para .txt, vamos extrair apenas o texto simples
+                const textContent = document.getElementById("editor").innerText;
+                blob = new Blob([textContent], { type: 'text/plain' });
+            } else if (fileType === 'html') {
+                // Para .html, vamos salvar o conteúdo HTML
+                blob = new Blob([editorContent], { type: 'text/html' });
+            }
+
+            // Criar um link de download
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `${documentName}.${fileType}`;
+            link.click();
+        }
+    </script>
+</body>
+</html>
