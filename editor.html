@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Text Editor</title>
+    <!-- Link para carregar 30 fontes do Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&family=Open+Sans&family=Lora&family=Montserrat&family=Poppins&family=Merriweather&family=Lato&family=Oswald&family=Slabo+27px&family=Raleway&family=Playfair+Display&family=Quicksand&family=Nunito&family=Fira+Sans&family=Source+Sans+Pro&family=Cabin&family=PT+Sans&family=Roboto+Condensed&family=Ubuntu&family=Anton&family=Pacifico&family=Crimson+Pro&family=Indie+Flower&family=Sacramento&family=Chivo&family=Kalam&family=Amatic+SC&family=Comfortaa&family=Zilla+Slab&family=Archivo&family=Varela+Round&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -23,23 +25,27 @@
             background-color: white;
             border-radius: 8px;
             box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-            margin-top: 80px; /* Para dar espaço à barra de ferramentas */
+            margin-top: 80px;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin-top: 130px;
         }
 
         /* Estilo para fixar a barra de ferramentas no topo */
         .toolbar {
-            position: fixed;
+            position: absolute;
             top: 0;
             left: 0;
             width: 100%;
-            background-color: #444;
+            background-color: #233bc2;
             padding: 10px;
             box-sizing: border-box;
             display: flex;
             gap: 10px;
             align-items: center;
             z-index: 1000;
+            text-align: center;
         }
 
         /* Botões da barra de ferramentas */
@@ -82,12 +88,12 @@
             background-color: #333;
             color: white;
             border-top-right-radius: 8px;
-            border-top-left-radius: 8px;
+            border-top-left-radius: 0px;
         }
 
         #document-name {
             width: 100%;
-            padding: 10px;
+            padding: 5px;
             font-size: 16px;
             border: none;
             background-color: #333;
@@ -103,7 +109,7 @@
             width: 100%;
             height: 100%;
             border-left: 1px solid #ccc;
-            background-color: #3a3535; /* Cor de fundo fora da área de edição */
+            background-color: #93afb4; /* Cor de fundo fora da área de edição */
             z-index: -1;
         }
 
@@ -136,10 +142,42 @@
         <button onclick="formatText('justifyCenter')">Center</button>
         <button onclick="formatText('justifyRight')">Right</button>
         <button onclick="formatText('justifyFull')">Justify</button>
+        <!-- Seletor de fontes com 30 fontes -->
         <select onchange="formatText('fontName', this.value)">
             <option value="Arial">Arial</option>
             <option value="Times New Roman">Times New Roman</option>
             <option value="Courier New">Courier New</option>
+            <option value="Roboto">Roboto</option>
+            <option value="Open Sans">Open Sans</option>
+            <option value="Lora">Lora</option>
+            <option value="Montserrat">Montserrat</option>
+            <option value="Poppins">Poppins</option>
+            <option value="Merriweather">Merriweather</option>
+            <option value="Lato">Lato</option>
+            <option value="Oswald">Oswald</option>
+            <option value="Slabo 27px">Slabo 27px</option>
+            <option value="Raleway">Raleway</option>
+            <option value="Playfair Display">Playfair Display</option>
+            <option value="Quicksand">Quicksand</option>
+            <option value="Nunito">Nunito</option>
+            <option value="Fira Sans">Fira Sans</option>
+            <option value="Source Sans Pro">Source Sans Pro</option>
+            <option value="Cabin">Cabin</option>
+            <option value="PT Sans">PT Sans</option>
+            <option value="Roboto Condensed">Roboto Condensed</option>
+            <option value="Ubuntu">Ubuntu</option>
+            <option value="Anton">Anton</option>
+            <option value="Pacifico">Pacifico</option>
+            <option value="Crimson Pro">Crimson Pro</option>
+            <option value="Indie Flower">Indie Flower</option>
+            <option value="Sacramento">Sacramento</option>
+            <option value="Chivo">Chivo</option>
+            <option value="Kalam">Kalam</option>
+            <option value="Amatic SC">Amatic SC</option>
+            <option value="Comfortaa">Comfortaa</option>
+            <option value="Zilla Slab">Zilla Slab</option>
+            <option value="Archivo">Archivo</option>
+            <option value="Varela Round">Varela Round</option>
         </select>
         <select onchange="formatText('fontSize', this.value)">
             <option value="1">Size 1</option>
@@ -150,8 +188,14 @@
             <option value="6">Size 6</option>
             <option value="7">Size 7</option>
         </select>
-        <button onclick="saveAsFile('txt')">Save as .txt</button>
-        <button onclick="saveAsFile('html')">Save as .html</button>
+        <button onclick="changeFontSize(-1)">-</button>
+        <button onclick="changeFontSize(1)">+</button>
+    </div>
+
+    <!-- Toolbar 2 (Arquivo) -->
+    <div class="toolbar" style="top: 50px;">
+        <button onclick="saveAsFile('txt')">Arquivo - Salvar como .txt</button>
+        <button onclick="saveAsFile('html')">Arquivo - Salvar como .html</button>
     </div>
 
     <div class="editor-container">
@@ -159,7 +203,7 @@
             <input type="text" id="document-name" placeholder="Untitled Document">
         </header>
         <div id="editor" class="editor" contenteditable="true">
-            Start editing here...
+            
         </div>
     </div>
 
@@ -189,6 +233,13 @@
             link.href = URL.createObjectURL(blob);
             link.download = `${documentName}.${fileType}`;
             link.click();
+        }
+
+        function changeFontSize(amount) {
+            const editor = document.getElementById("editor");
+            let currentFontSize = window.getComputedStyle(editor, null).getPropertyValue('font-size');
+            currentFontSize = parseFloat(currentFontSize);
+            editor.style.fontSize = (currentFontSize + amount) + 'px';//aumenta o tamanho de todo o texto
         }
     </script>
 </body>
