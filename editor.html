@@ -55,23 +55,27 @@
             <option value="Varela Round">Varela Round</option>
         </select>
         <select onchange="formatText('fontSize', this.value)">
-            <option value="1">Size 1</option>
-            <option value="2">Size 2</option>
-            <option value="3">Size 3</option>
-            <option value="4">Size 4</option>
-            <option value="5">Size 5</option>
-            <option value="6">Size 6</option>
-            <option value="7">Size 7</option>
+            <option value="1">Tamanho 1</option>
+            <option value="2">Tamanho 2</option>
+            <option value="3">Tamanho 3</option>
+            <option value="4">Tamanho 4</option>
+            <option value="5">Tamanho 5</option>
+            <option value="6">Tamanho 6</option>
+            <option value="7">Tamanho 7</option>
         </select>
         <button onclick="changeFontSize(-1)">-</button>
         <button onclick="changeFontSize(1)">+</button>
+
+
+        <!-- Botões de Desfazer e Refazer -->
+        <button onclick="undoAction()">Voltar</button>
+        <button onclick="redoAction()">Avançar</button>
+
+        <button onclick="saveAsFile('txt')">Salvar como .txt</button>
+        <button onclick="saveAsFile('html')">Salvar como .html</button>
     </div>
 
-    <!-- Toolbar 2 (Arquivo) -->
-    <div class="toolbar" style="top: 50px;">
-        <button onclick="saveAsFile('txt')">Arquivo - Salvar como .txt</button>
-        <button onclick="saveAsFile('html')">Arquivo - Salvar como .html</button>
-    </div>
+
 
     <div class="editor-container">
         <header>
@@ -86,6 +90,14 @@
         // Função para formatar o texto no editor
         function formatText(command, value = null) {
             document.execCommand(command, false, value);
+        }
+
+        function undoAction() {
+            document.execCommand('undo');
+        }
+
+        function redoAction() {
+            document.execCommand('redo');
         }
 
         // Função para salvar o conteúdo como .txt ou .html
@@ -110,12 +122,47 @@
             link.click();
         }
 
+        document.addEventListener('keydown', function(event) {
+            if (event.ctrlKey) {
+                if (event.key === 'z') {
+                    event.preventDefault();
+                    undoAction();
+                }
+                if (event.key === 'y') {
+                    event.preventDefault();
+                    redoAction();
+                }
+            }
+        });
+
         function changeFontSize(amount) {
             const editor = document.getElementById("editor");
             let currentFontSize = window.getComputedStyle(editor, null).getPropertyValue('font-size');
             currentFontSize = parseFloat(currentFontSize);
             editor.style.fontSize = (currentFontSize + amount) + 'px';//aumenta o tamanho de todo o texto
         }
+        // Armazena o conteúdo do editor no localStorage
+        function saveEditorContent() {
+            const editorContent = document.getElementById("editor").innerHTML;
+            localStorage.setItem("editorContent", editorContent); // Salva o conteúdo no localStorage
+        }
+
+        // Recupera o conteúdo do editor do localStorage
+        function loadEditorContent() {
+            const savedContent = localStorage.getItem("editorContent");
+            if (savedContent) {
+                document.getElementById("editor").innerHTML = savedContent;
+            }
+        }
+
+        // Chama a função de salvar sempre que o conteúdo é alterado
+        document.getElementById("editor").addEventListener("input", saveEditorContent);
+
+        // Carrega o conteúdo do localStorage ao carregar a página
+        window.onload = function() {
+            loadEditorContent();
+        };
+        
     </script>
 </body>
 </html>
