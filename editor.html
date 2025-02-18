@@ -17,6 +17,9 @@
         <button onclick="formatText('justifyCenter')">Center</button>
         <button onclick="formatText('justifyRight')">Right</button>
         <button onclick="formatText('justifyFull')">Justify</button>
+
+        <input type="color" onchange="changeTextColor(this.value)">
+
         <!-- Seletor de fontes com 30 fontes -->
         <select onchange="formatText('fontName', this.value)">
             <option value="Arial">Arial</option>
@@ -55,6 +58,7 @@
             <option value="Varela Round">Varela Round</option>
         </select>
         <select onchange="formatText('fontSize', this.value)">
+            <option value="3" selected></option>//deixa selecionado o tamanho 3
             <option value="1">Tamanho 1</option>
             <option value="2">Tamanho 2</option>
             <option value="3">Tamanho 3</option>
@@ -62,6 +66,10 @@
             <option value="5">Tamanho 5</option>
             <option value="6">Tamanho 6</option>
             <option value="7">Tamanho 7</option>
+            <option value="8">Tamanho 8</option>
+            <option value="9">Tamanho 9</option>
+            <option value="10">Tamanho 10</option>
+
         </select>
         <button onclick="changeFontSize(-1)">-</button>
         <button onclick="changeFontSize(1)">+</button>
@@ -88,9 +96,25 @@
 
     <script>
         // Função para formatar o texto no editor
-        function formatText(command, value = null) {
-            document.execCommand(command, false, value);
-        }
+        // Função para formatar o texto no editor
+function formatText(command, value = null) {
+    // Aplica o comando de formatação
+    document.execCommand(command, false, value);
+
+    // Seleciona todos os botões da barra de ferramentas
+    const buttons = document.querySelectorAll('.toolbar button');
+
+    // Remove a classe 'selected' de todos os botões
+    buttons.forEach(button => {
+        button.classList.remove('selected');
+    });
+
+    // Adiciona a classe 'selected' ao botão clicado
+    const activeButton = document.querySelector(`button[onclick="formatText('${command}', '${value}')"]`);
+    if (activeButton) {
+        activeButton.classList.add('selected');
+    }
+}
 
         function undoAction() {
             document.execCommand('undo');
@@ -98,6 +122,10 @@
 
         function redoAction() {
             document.execCommand('redo');
+        }
+
+        function changeTextColor(color) {
+            document.execCommand('foreColor', false, color);//comando forecolor abre a aba de cores 
         }
 
         // Função para salvar o conteúdo como .txt ou .html
